@@ -1,6 +1,26 @@
 #!/usr/bin/env python3
 # e2eVstep_1_eval.py developed by Dr Manish Ghatge, Scientist, IITM Pune
 # Full working version: Conv→ViT→UNet, memmap dataset, scaler, multi-GPU compatible Using Python: /dr_manish/envs/man/bin/python
+
+# Change to the job submission directory
+cd $PBS_O_WORKDIR
+
+export CUDA_VISIBLE_DEVICES=0,1,2,3
+echo "Using Python: $(which python)"
+python --version
+
+torchrun --nnodes=1 --nproc_per_node=4 e2eVstep_1_evl.py \
+  --data_dir "dr_manish/memmap" \
+  --output_dir "dr_manish/IITM_AI" \
+  --input_vars 10m_u_component_of_wind 10m_v_component_of_wind wind_speed vorticity volumetric_soil_water_layer_1 volumetric_soil_water_layer_2 volumetric_soil_water_layer_3 volumetric_soil_water_layer_4 vertical_velocity u_component_of_wind v_component_of_wind total_precipitation_6hr total_precipitation_24hr total_column_water_vapour total_cloud_cover temperature surface_pressure specific_humidity snow_depth relative_humidity mean_surface_sensible_heat_flux mean_surface_latent_heat_flux mean_sea_level_pressure divergence lapse_rate above_ground geopotential 2m_temperature toa_incident_solar_radiation toa_incident_solar_radiation_24hr toa_incident_solar_radiation_6hr toa_incident_solar_radiation_12hr eddy_kinetic_energy integrated_vapor_transport boundary_layer_height \
+  --target_vars 10m_u_component_of_wind 10m_v_component_of_wind vertical_velocity temperature relative_humidity surface_pressure boundary_layer_height 2m_temperature \
+  --epochs 50 --batch_size 4 --lr 1e-4 \
+  --device cuda
+
+# Done
+echo "Job completed successfully."
+
+
 Python 3.8.18
 [INFO] device: cuda
 [INFO] device: cuda
